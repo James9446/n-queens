@@ -128,7 +128,9 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var counter = 0;
-      for (var i = 0; i < (this.get('n') - majorDiagonalColumnIndexAtFirstRow); i++) {
+      var start = majorDiagonalColumnIndexAtFirstRow >= 0 ? 0 : majorDiagonalColumnIndexAtFirstRow * -1;
+      var end = majorDiagonalColumnIndexAtFirstRow < 0 ? 0 : majorDiagonalColumnIndexAtFirstRow;
+      for (var i = start; i < (this.get('n')) - end; i++) {
         var row = this.rows()[i];
         if(row[majorDiagonalColumnIndexAtFirstRow + i] === 1) { counter++ ;}
         if(counter === 2) { return true; }
@@ -139,7 +141,9 @@
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      for(var i = 0; i < this.get('n'); i++) {
+      var n = this.get('n');
+      // initialize i so that the loop runs from -n to n
+      for(var i = -1 * (n - 1); i < n; i++) {
         if (this.hasMajorDiagonalConflictAt(i)) { return true; }
       }
       return false;
