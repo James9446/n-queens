@@ -65,6 +65,10 @@ window.countNRooksSolutions = function(n) {
     }
   
     for (var i = 0; i < n; i++) { 
+      if (n % 2 === 0 && depth === 0 && i === n / 2) {
+        solutionCount *= 2;
+        break;
+      }
       board.togglePiece(depth, i);
       traverse(depth + 1, depth, i);
     }
@@ -77,6 +81,7 @@ window.countNRooksSolutions = function(n) {
   
   traverse(0);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  
   return solutionCount;
 };
 
@@ -142,6 +147,10 @@ window.countNQueensSolutions = function(n) {
     }
   
     for (var i = 0; i < n; i++) { 
+      if (n % 2 === 0 && depth === 0 && i === n / 2) {
+        solutionCount *= 2;
+        break;
+      }
       board.togglePiece(depth, i);
       traverse(depth + 1, depth, i);
     }
