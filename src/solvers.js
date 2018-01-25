@@ -116,12 +116,12 @@ window.findNQueensSolution = function(n) {
     }
   };
   
-  traverse(0, emptyboard);
-  
   if (n === 2 || n === 3) {
     solution = emptyboard.rows();
+  } else {
+    traverse(0, emptyboard);
   }
-
+  
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
