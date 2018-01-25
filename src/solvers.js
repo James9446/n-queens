@@ -16,46 +16,33 @@
 
 
 window.findNRooksSolution = function(n) {
-  var emptyboard = new Board({n: n});
+  var board = new Board({n: n});
   var solution; 
-  
-  
-  var traverse = function(depth, board) {
-    if (board.hasAnyRooksConflicts()) { return; }
-    
-    if (solution) { return; }
+  var traverse = function(depth, rowIndex, colIndex ) {
+    if (board.hasAnyRooksConflicts()) { 
+      board.togglePiece(rowIndex, colIndex);
+      return; 
+    }
     
     if (depth === n) {
       solution = board.rows();
       return;
     }
     
-    var colIndex = 0;
-    while (colIndex < n && !solution) {
-      var matrix = [];
-      for (var i = 0; i < n; i++) {
-        matrix.push(board.get(i).slice());
-      }
-      var subBoard = new Board(matrix);
-      subBoard.togglePiece(depth, colIndex);
-      traverse(depth + 1, subBoard);
-      colIndex++;
+    var i = 0;
+    while ( i < n && !solution) {
+      board.togglePiece(depth, i);
+      traverse(depth + 1, depth, i);
+      i++;
     }
   
-    // for (var i = 0; i < n; i++) { 
-    //  if (!solution) {
-    //   var matrix = [];
-    //   for (var j = 0; j < n; j++) {
-    //     matrix.push(board.get(j).slice());
-    //   }
-    //   var subBoard = new Board(matrix);
-    //   subBoard.togglePiece(depth, i);
-    //   traverse(depth + 1, subBoard);
-    //  }
-    // }
+    if (depth !== 0 && !solution) { 
+      board.togglePiece(rowIndex, colIndex); 
+      return;
+    }
   };
   
-  traverse(0, emptyboard);
+  traverse(0);
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
@@ -65,11 +52,10 @@ window.countNRooksSolutions = function(n) {
   var board = new Board({n: n});
   var solutionCount = 0; 
   
-  var traverse = function(depth, rowIndex, colIndex ) {
-    
-    if (board.hasAnyRooksConflicts()) { 
+  var traverse = function(depth, rowIndex, colIndex) {
+    if (board.hasColConflictAt(colIndex)) { 
       board.togglePiece(rowIndex, colIndex);
-      return; 
+      return;
     }
     
     if (depth === n) {
@@ -96,42 +82,43 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var emptyboard = new Board({n: n});
-  var solution = null; 
+  var board = new Board({n: n});
+  var solution;  
   
-  
-  var traverse = function(depth, board) {
-    if (board.hasAnyQueensConflicts()) { return; }
+  var traverse = function(depth, rowIndex, colIndex) {
+    if (board.hasAnyQueensConflicts()) { 
+      board.togglePiece(rowIndex, colIndex);
+      return; 
+    }
     
-    if (solution !== null) { return; }
-    
-    if (depth === n) {
+    if (depth === n && !solution) {
       solution = board.rows();
       return;
     }
+     
+    var i = 0;
+    while (i < n && !solution) {
+      board.togglePiece(depth, i);
+      traverse(depth + 1, depth, i);
+      i++;
+    }
     
-    var colIndex = 0;
-    while (colIndex < n && solution === null) {
-      var matrix = [];
-      for (var i = 0; i < n; i++) {
-        matrix.push(board.get(i).slice());
-      }
-      var subBoard = new Board(matrix);
-      subBoard.togglePiece(depth, colIndex);
-      traverse(depth + 1, subBoard);
-      colIndex++;
+    if (depth !== 0 && !solution) { 
+      board.togglePiece(rowIndex, colIndex); 
+      return;
     }
   };
   
   if (n === 2 || n === 3) {
-    solution = emptyboard.rows();
+    solution = board.rows();
   } else {
-    traverse(0, emptyboard);
+    traverse(0);
   }
   
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
+
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
@@ -139,8 +126,11 @@ window.countNQueensSolutions = function(n) {
   
   var board = new Board({n: n});
   var solutionCount = 0; 
+  
   var traverse = function(depth, rowIndex, colIndex) {
-    if (board.hasAnyQueensConflicts()) { 
+    rowIndex = rowIndex || 0;
+    colIndex = colIndex || 0;
+    if (board.hasAnyQueenConflictsOn(rowIndex, colIndex)) { 
       board.togglePiece(rowIndex, colIndex);
       return; 
     }
